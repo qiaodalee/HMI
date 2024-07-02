@@ -1,0 +1,6 @@
+From: matt.03144@gmail.com
+Subject: Testing Gmail Email from Command Line
+Hello,
+This is a test email sent from the Linux.
+Regards,
+Matthew Lee.
