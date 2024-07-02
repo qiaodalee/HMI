@@ -1,0 +1,36 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Mail</title>
+    <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.5.1/jquery.min.js"></script>
+</head>
+
+<body>
+
+    <script>
+        function sendEmail() {
+            console.log(document.getElementById("emailAddressInput").value);
+            setTimeout(()=>{}, 10000);
+            $.post({
+                url: '../api/sendMailToUser',
+                contentType: 'application/json',
+                data: JSON.stringify({ emailAddressInput: document.getElementById('emailAddressInput').value }),
+                    success: function(data) {
+                        console.log('Data received:', data);
+                    },
+                    error: function(xhr, status, error) {
+                        console.error('Error:', error);
+                    }
+            });
+        }
+    </script>
+
+    <p>Email: <input type="text" id="emailAddressInput" value=""></p>
+    <input type="button" value="Submit" onclick="sendEmail()">
+
+</body>
+
+</html>

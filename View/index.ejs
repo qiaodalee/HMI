@@ -1,0 +1,44 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Home</title>
+    <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.5.1/jquery.min.js"></script>
+</head>
+<body>
+    <script>
+        // 1000 milliseconds = 1 second
+        const interval = 1000;
+        
+        $(document).ready(function() {
+            function getPowerState() {
+                $.get('../api/getPowerState', function(res) {
+                    document.getElementById('power-state').innerHTML = res;
+                });
+            }
+
+            setInterval(getPowerState, interval); 
+        });
+
+        function out(name, state){
+            let outdata = {};
+            outdata[name] = (state == '1') ? '0' : '1';
+            console.log(outdata);
+
+            $.post({
+                url: '../api/updatePowerState',
+                contentType: 'application/json',
+                data: JSON.stringify(outdata),
+                    success: function(data) {
+                        console.log('Data received:', data);
+                    },
+                    error: function(xhr, status, error) {
+                        console.error('Error:', error);
+                    }
+            });
+        }
+    </script>
+    <div id="power-state"></div>
+</body>
+</html>
