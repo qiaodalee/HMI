@@ -23,7 +23,7 @@ server.use('/api', api);
 server.use('/mail', mail);
 
 server.use('/', (req, res) =>{
-    res.send('Hello!');
+    res.send('<a href="https://127.0.0.1/index">index</a><br><br><a href="https://127.0.0.1/mail">mail</a>');
 });
 
 export default server;
