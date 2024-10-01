@@ -1,0 +1,115 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>admin</title>
+    <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.5.1/jquery.min.js"></script>
+</head>
+<body>
+
+    <script>
+        function displaybits(n){
+            if ( typeof(n) == typeof("1")){
+                n = parseInt(n);
+            }
+            res = "";
+            for ( let i = 3; i>= 0; i--){
+                if ( (n >> i) & 1) res += "1";
+                else res += "0";
+            }
+
+            return res;
+
+        }
+        function xor(m, n){
+            return (parseInt(m) ^ parseInt(n));
+        }
+        function SetSHA256(fakeChallenge, raw_data){
+            const hex_h = "0123456789abcdef";
+            var md, p, q, m, n, i;
+            var p = "";
+            var sha256_data = "";
+
+            md = fakeChallenge.innerHTML;
+            for ( i = 0; i< raw_data.length; i++){
+                q = raw_data.charCodeAt(i);
+                p += q.toString(16);
+                // console.log(q);
+            }
+            for ( i = 0; i< p.length; i++){
+                m = hex_h.indexOf(p.charAt(i));
+                if ( i >= md.length)
+                    n = hex_h.indexOf(md.charAt(i%md.length));
+                else
+                    n = hex_h.indexOf(md.charAt(i));
+                
+                sha256_data += hex_h.charAt(xor(m, n));
+                // console.log(`${displaybits(m)} x ${displaybits(n)} => ${displaybits(xor(m, n))}`);
+            }
+
+            return sha256_data;
+        }
+
+        function admin(){
+            let user = document.getElementById('user').value;
+            let passwd = document.getElementById('passwd').value;
+            const fakeChallenge = document.getElementById('fakeChallenge');
+            
+            user = SetSHA256(fakeChallenge, user);
+            passwd = SetSHA256(fakeChallenge, passwd);
+
+            document.getElementById('passwd').value = "";
+
+            payload = {
+                user: user,
+                passwd: passwd,
+                fakeChallenge: fakeChallenge.innerHTML
+            };
+
+
+            $.post({
+                url: '../api/admin',
+                contentType: 'application/json',
+                data: JSON.stringify(payload),
+                    success: function(data) {
+                        // console.log('Data received:', data);
+                        if ( data){
+                            window.location.href = "../index";
+                        }
+                        else{
+                            window.alert('user or password is not correct');
+                        }
+                    },
+                    error: function(xhr, status, error) {
+                        console.error('Error:', error);
+                    }
+            });
+        }
+
+        // $.post({
+        //     url: '../api/admin',
+        //     contentType: 'application/json',
+        //     data: JSON.stringify({
+        //         user: '',
+        //         passwd: '',
+        //         fakeChallenge: fakeChallenge.innerHTML
+        //     }),
+        //         success: function(data) {
+        //         },
+        //         error: function(xhr, status, error) {
+        //             console.error('Error:', error);
+        //         }
+        // });
+    </script>
+    <form id="adminForm" method="post" action="../api/admin">
+        <p>User  : <input type="text" id="user" value=""></p>
+        <p>Passwd: <input type="password" id="passwd" value=""></p>
+        <p id="fakeChallenge" hidden="true">8c6976e5b5410415bde908bd4dee15dfb167a9c873fc4bb8a81f6f2ab448a918</p>
+        <input type="button" value="Submit" onclick="admin()">
+    </form>
+
+</body>
+
+</html>

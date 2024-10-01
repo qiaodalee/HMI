@@ -5,12 +5,12 @@ import api from '../Controller/api.controller.js';
 const router = express.Router();
 router.use(bodyParser.json());
 
-router.post('/setPowerState', api.setPowerState);
-
-router.get('/getPowerState', api.getPowerState);
-
 router.post('/sendMailToUser', api.sendMailToUser);
 
-router.post('/updatePowerState', api.updatePowerState);
+router.post('/admin', api.admin);
+
+router.get('/getSolarData', api.getSolarData);
+
+router.get('/getSolarHistoryDatas', api.getSolarHistoryDatas);
 
 export default router;

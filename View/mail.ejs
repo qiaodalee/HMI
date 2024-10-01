@@ -5,10 +5,11 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Mail</title>
+    <link rel="stylesheet" type="text/css" href="/css/style.css">
+
     <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.5.1/jquery.min.js"></script>
 </head>
 
-<body>
 
     <script>
         function sendEmail() {
@@ -28,9 +29,44 @@
         }
     </script>
 
-    <p>Email: <input type="text" id="emailAddressInput" value=""></p>
-    <input type="button" value="Submit" onclick="sendEmail()">
+<body>
+    <!-- Top navigation -->
+    <header>
+        <div class="logo">
+            <img src="logo.png" alt="Logo">
+            <h1>solar energy scada</h1>
+        </div>
+        <nav>
+            <ul>
+                <li><a href="#">Overview</a></li>
+                <li><a href="#">Daily Data</a></li>
+                <li><a href="#">Inverter Info</a></li>
+                <li><a href="#">Historical Data</a></li>
+                <li><a href="#">Settings</a></li>
+            </ul>
+        </nav>
+    </header>
 
+    <!-- Main content -->
+    <div class="content">
+        <aside class="sidebar">
+            <ul>
+                <li onclick="window.location.href='./index'">Index</li>
+                <li onclick="window.location.href='./mail'">Mail</li>
+                <li>Monitor & Controll</li>
+            </ul>
+        </aside>
+
+        <main>
+
+            <!-- Graph and Image Section -->
+            <section class="data-visuals">
+                <p>Email: <input type="text" id="emailAddressInput" value=""></p>
+                <input type="button" value="Submit" onclick="sendEmail()">
+            </section>
+        </main>
+    </div>
 </body>
+    
 
 </html>

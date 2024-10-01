@@ -3,42 +3,192 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <link rel="stylesheet" type="text/css" href="/css/style.css">
+    <link rel="stylesheet" type="text/css" href="/css/index.css">
     <title>Home</title>
     <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.5.1/jquery.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
 </head>
-<body>
     <script>
         // 1000 milliseconds = 1 second
-        const interval = 1000;
+        const interval = 20000;
+        var chart;
+
+        $(document).ready(
+            () => {
+                const ctx = document.getElementById('chart_canvas').getContext('2d');
+                chart = new Chart(ctx, {
+                        type: 'bar',
+                        data: {
+                            labels: [1],
+                            datasets: [
+                                {
+                                    label: ['2'],
+                                    data: [0],
+                                    backgroundColor: [
+                                        'rgba(30,30,30,0.7)'
+                                    ],
+                                    borderColor: [
+                                        'rgba(30,30,30,0.7)'
+                                    ]
+                                }
+                            ]
+                        },
+                        options: {
+                            scales: {
+                                x: {
+                                    beginAtZero: true
+                                },
+                                y: {
+                                    beginAtZero: true
+                                }
+                            }
+                        }
+                    });
+            }
+        );
         
         $(document).ready(function() {
-            function getPowerState() {
-                $.get('../api/getPowerState', function(res) {
-                    document.getElementById('power-state').innerHTML = res;
+            function getSolarData() {
+                $.get('../api/getSolarData', function(res) {
+                    document.getElementById('totalPowerGeneration').innerHTML = res['totalPowerGeneration'] + ' kwh';
+                    document.getElementById('monthGeneration').innerHTML = res['monthGeneration'] + ' kwh';
+                    document.getElementById('dayGeneration').innerHTML = res['dayGeneration'] + ' kwh';
+                    document.getElementById('currentGeneration').innerHTML = res['currentGeneration'] + ' kwh';
+
+                    document.getElementById('systemEfficiency').innerHTML = res['systemEfficiency'] + ' %';
+                    document.getElementById('co2Reduction').innerHTML = res['co2Reduction'] + ' kg';
+                    document.getElementById('todayPowerUsed').innerHTML = res['todayPowerUsed'] + ' kwh';
+                    document.getElementById('nameplateCapacityPercentage').innerHTML = res['nameplateCapacityPercentage'] + ' %';
                 });
             }
 
-            setInterval(getPowerState, interval); 
+            function getSolarHistoryDatas() {
+                return new Promise((resolve, reject) => {
+                    $.get('../api/getSolarHistoryDatas', function(res) {
+                        resolve(res);
+                    });
+                })
+                
+            }
+
+            function updateChart() {
+                getSolarHistoryDatas()
+                    .then( recv => {
+                        const currDate = new Date(); 
+                        const chartData = recv['powerGeneration'][currDate.getFullYear()][currDate.getMonth()+1][currDate.getDate()];
+                        chart.data.labels = Object.keys(chartData);
+                        chart.data.datasets[0].data = [];
+
+                        Object.keys(chartData).forEach( (minutes) => {
+
+                            let minuteGeneration = 0;
+                            Object.keys(chartData[minutes]).forEach( (data) => {
+                                minuteGeneration += chartData[minutes][data];
+                            })
+                            chart.data.datasets[0].data.push((minuteGeneration / 60));
+                        })
+
+
+                        chart.update();
+
+                        time = new Date(recv['timestamp']);
+                        timeStr = `${time.getFullYear()}-${time.getMonth()+1}-${time.getDate()} ${time.getHours()}:${time.getMinutes()}:${time.getSeconds()}`
+
+                        document.getElementById('timestamp').innerHTML = `System start at 2023-01-01 08:00:00<br>`;
+                        document.getElementById('timestamp').innerHTML += `Current time: ${timeStr}`;
+                    })
+                
+            }
+
+            getSolarData();
+            updateChart();
+            setInterval(getSolarData, interval); 
+            setInterval(updateChart, interval); 
         });
-
-        function out(name, state){
-            let outdata = {};
-            outdata[name] = (state == '1') ? '0' : '1';
-            console.log(outdata);
-
-            $.post({
-                url: '../api/updatePowerState',
-                contentType: 'application/json',
-                data: JSON.stringify(outdata),
-                    success: function(data) {
-                        console.log('Data received:', data);
-                    },
-                    error: function(xhr, status, error) {
-                        console.error('Error:', error);
-                    }
-            });
-        }
     </script>
-    <div id="power-state"></div>
+<body>
+    <!-- Top navigation -->
+    <header>
+        <div class="logo">
+            <img src="logo.png" alt="Logo">
+            <h1>solar energy scada</h1>
+        </div>
+        <nav>
+            <ul>
+                <li><a href="#">Overview</a></li>
+                <li><a href="#">Daily Data</a></li>
+                <li><a href="#">Inverter Info</a></li>
+                <li><a href="#">Historical Data</a></li>
+                <li><a href="#">Settings</a></li>
+            </ul>
+        </nav>
+    </header>
+
+    <!-- Main content -->
+    <div class="content">
+        <aside class="sidebar">
+            <ul>
+                <li onclick="window.location.href='./index'">Index</li>
+                <li onclick="window.location.href='./mail'">Mail</li>
+                <li>Monitor & Controll</li>
+                <!-- <li>Menu 4</li> -->
+            </ul>
+        </aside>
+
+        <main>
+            <!-- Summary Info -->
+            <p id="timestamp"></p>
+            <section class="summary">
+                <div class="box">
+                    <h2 id="totalPowerGeneration">508780 kWh</h2>
+                    <p>Total Power Generation</p>
+                </div>
+                <div class="box">
+                    <h2 id="monthGeneration">2950 kWh</h2>
+                    <p>Month's Generation</p>
+                </div>
+                <div class="box">
+                    <h2 id="dayGeneration">2950 kWh</h2>
+                    <p>Today's Generation</p>
+                </div>
+                <div class="box">
+                    <h2 id="currentGeneration">2950 kWh</h2>
+                    <p>Current Generation</p>
+                </div>
+            </section>
+
+            <!-- System Information -->
+            <section class="system-info">
+                <div class="info">
+                    <h3 id="systemEfficiency">97.2%</h3>
+                    <p>System Efficiency</p>
+                </div>
+                <div class="info">
+                    <h3 id="co2Reduction">332,233.7 kg</h3>
+                    <p>CO2 Reduction</p>
+                </div>
+                <div class="info">
+                    <h3 id="todayPowerUsed">118 W/m²</h3>
+                    <p>Today's Power Used</p>
+                </div>
+                <div class="info">
+                    <h3 id="nameplateCapacityPercentage"> 19.5 °C</h3>
+                    <p>Nameplate Capacity Percentage</p>
+                </div>
+            </section>
+
+            <!-- Graph and Image Section -->
+            <section class="data-visuals">
+                <div class="graph">
+                    <h4>Energy Production Graph</h4>
+                    <canvas id="chart_canvas" width="400" height="200"></canvas>
+                </div>
+                <div class="solar-img">
+                    <img src="../img/solar.webp" alt="Solar Panels" height="300" width="300">
+                </div>
+            </section>
+        </main>
+    </div>
 </body>
 </html>

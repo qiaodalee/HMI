@@ -1,0 +1,63 @@
+main {
+    flex-grow: 1;
+    padding: 20px;
+}
+
+.summary {
+    display: flex;
+    justify-content: space-between;
+    gap: 10px;
+}
+
+.summary .box {
+    background-color: #e74c3c;
+    color: white;
+    padding: 20px;
+    text-align: center;
+    border-radius: 8px;
+    flex: 1;
+}
+
+.system-info {
+    display: flex;
+    justify-content: space-between;
+    margin-top: 20px;
+}
+
+.system-info .info {
+    background-color: #3498db;
+    color: white;
+    padding: 20px;
+    text-align: center;
+    border-radius: 8px;
+    flex: 1;
+    margin-right: 10px;
+}
+
+.system-info .info:last-child {
+    margin-right: 0;
+}
+
+.data-visuals {
+    display: flex;
+    justify-content: space-between;
+    margin-top: 20px;
+}
+
+.data-visuals .graph, .data-visuals .solar-img {
+    background-color: white;
+    padding: 20px;
+    border-radius: 8px;
+    flex: 1;
+    margin-right: 10px;
+}
+
+.data-visuals .solar-img {
+    margin-right: 0;
+}
+
+.graph img, .solar-img img {
+    max-width: 100%;
+    height: auto;
+    display: block;
+}
