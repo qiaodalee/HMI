@@ -1,4 +1,6 @@
+import { rejects } from 'assert';
 import {exec} from 'child_process';
+import { resolve } from 'path';
 import { start } from 'repl';
 
 // admin: admin
@@ -14,16 +16,15 @@ let solarDatas = {
     'systemEfficiency': 0,
     'co2Reduction': 0,
     'todayPowerUsed': 0,
+    'nameplateCapacity': 5000000,
     'nameplateCapacityPercentage': 0
 };
 
 let solarHistoryDatas = {
     'timestamp': 0,
-    'powerGeneration': {},
-    'co2Reduction': {},
-    'powerUsed': {},
-    'nameplateCapacityPercentage': {}
 };
+
+let HMIData = {};
 
 function getRandomNumber(range, base, isInteger){
     if ( isInteger) return Math.floor(Math.random() * range)+base; 
@@ -66,28 +67,55 @@ function getRandomPowerGeneration(currentDate){
     const currentHour = currentDate.getHours();
     const currentMinute = currentDate.getMinutes();
 
-    if ( !solarHistoryDatas['powerGeneration'][currentYear]){
-        solarHistoryDatas['powerGeneration'][currentYear] = {};
+    if ( !solarHistoryDatas[currentYear]){
+        solarHistoryDatas[currentYear] = {};
     }
 
-    if ( !solarHistoryDatas['powerGeneration'][currentYear][currentMonth]) {
-        solarHistoryDatas['powerGeneration'][currentYear][currentMonth] = {};  
+    if ( !solarHistoryDatas[currentYear][currentMonth]) {
+        solarHistoryDatas[currentYear][currentMonth] = {};  
     } 
 
-    if ( !solarHistoryDatas['powerGeneration'][currentYear][currentMonth][currentDay]) {
-        solarHistoryDatas['powerGeneration'][currentYear][currentMonth][currentDay] = {};  
+    if ( !solarHistoryDatas[currentYear][currentMonth][currentDay]) {
+        solarHistoryDatas[currentYear][currentMonth][currentDay] = {};  
     } 
 
-    if ( !solarHistoryDatas['powerGeneration'][currentYear][currentMonth][currentDay][currentHour]) {
-        solarHistoryDatas['powerGeneration'][currentYear][currentMonth][currentDay][currentHour] = {};  
-    } 
+    if ( !solarHistoryDatas[currentYear][currentMonth][currentDay][currentHour]) {
+        solarHistoryDatas[currentYear][currentMonth][currentDay][currentHour] = {};  
+    }
 
-    if ( !solarHistoryDatas['powerGeneration'][currentYear][currentMonth][currentDay][currentHour][currentMinute]) {
-        solarHistoryDatas['powerGeneration'][currentYear][currentMonth][currentDay][currentHour][currentMinute] = {};  
-    } 
+    solarHistoryDatas[currentYear][currentMonth][currentDay][currentHour][currentMinute] = {};
 
-    solarHistoryDatas['powerGeneration'][currentYear][currentMonth][currentDay][currentHour][currentMinute] = getRandomPowerGenerationNumber(currentMonth, currentHour);
+    solarHistoryDatas[currentYear][currentMonth][currentDay][currentHour][currentMinute]['powerGeneration'] = getRandomPowerGenerationNumber(currentMonth, currentHour) / 20;
+    solarHistoryDatas[currentYear][currentMonth][currentDay][currentHour][currentMinute]['co2Reduction'] = solarHistoryDatas[currentYear][currentMonth][currentDay][currentHour][currentMinute]['powerGeneration'] * (getRandomNumber(3, 4, true) / 10);
+    solarHistoryDatas[currentYear][currentMonth][currentDay][currentHour][currentMinute]['powerUsed'] = ((getRandomPowerGenerationNumber(currentMonth, currentHour)*0.02) + getRandomNumber(20, 0, true)) / 20
+    solarHistoryDatas[currentYear][currentMonth][currentDay][currentHour][currentMinute]['nameplateCapacity'] = solarHistoryDatas[currentYear][currentMonth][currentDay][currentHour][currentMinute]['powerGeneration'] - solarHistoryDatas[currentYear][currentMonth][currentDay][currentHour][currentMinute]['powerUsed'];
 
+    // console.log(solarHistoryDatas[currentYear][currentMonth][currentDay][currentHour][currentMinute]['powerGeneration']);
+
+
+    solarDatas['totalPowerGeneration'] += solarHistoryDatas[currentYear][currentMonth][currentDay][currentHour][currentMinute]['powerGeneration'];
+    
+    if ( currentDay == 1) solarDatas['monthGeneration'] = 0;
+    solarDatas['monthGeneration'] += solarHistoryDatas[currentYear][currentMonth][currentDay][currentHour][currentMinute]['powerGeneration'];
+
+    if ( currentHour == 0) {
+        solarDatas['dayGeneration'] = 0;
+        solarDatas['todayPowerUsed'] = 0;
+    }
+    solarDatas['dayGeneration'] += solarHistoryDatas[currentYear][currentMonth][currentDay][currentHour][currentMinute]['powerGeneration'];
+
+    solarDatas['currentGeneration'] = solarHistoryDatas[currentYear][currentMonth][currentDay][currentHour][currentMinute]['powerGeneration'] * 60;
+
+    solarDatas['systemEfficiency'] = (solarDatas['currentGeneration'] > 0) ? (getRandomNumber(40, 950, true) / 10) : 0;
+
+    solarDatas['co2Reduction'] += solarHistoryDatas[currentYear][currentMonth][currentDay][currentHour][currentMinute]['co2Reduction'];
+
+    solarDatas['todayPowerUsed'] += solarHistoryDatas[currentYear][currentMonth][currentDay][currentHour][currentMinute]['powerUsed'];
+
+    solarDatas['nameplateCapacity'] += solarHistoryDatas[currentYear][currentMonth][currentDay][currentHour][currentMinute]['nameplateCapacity'];
+    solarDatas['nameplateCapacityPercentage'] = solarDatas['nameplateCapacity'] / 300000;
+
+    // console.log(solarDatas)
 }
 
 function updateSolarDatas(){
@@ -95,37 +123,7 @@ function updateSolarDatas(){
 
     if ( solarHistoryDatas['timestamp'].getMinutes() != currentDate.getMinutes()){
         getRandomPowerGeneration(currentDate);
-        Object.keys(solarHistoryDatas['powerGeneration']).forEach((year) => {
-            const yearData = solarHistoryDatas['powerGeneration'][year];
-            Object.keys(yearData).forEach((month) => {
-                const monthData = yearData[month];
-                solarDatas['monthGeneration'] = 0;
-                Object.keys(monthData).forEach((date) => {
-                    const dateData = monthData[date];
-                    solarDatas['dayGeneration'] = 0;
-                    solarDatas['todayPowerUsed'] = 0;
-                    Object.keys(dateData).forEach((hour) => {
-                        const minuteData = dateData[hour];
-                        Object.keys(minuteData).forEach((powerGeneration) => {
-                            // console.log(powerGeneration , minuteData[powerGeneration]);
-                            solarDatas['monthGeneration'] += Math.floor(minuteData[powerGeneration]/60);
-                            solarDatas['dayGeneration'] += Math.floor(minuteData[powerGeneration]/60);
-                            solarDatas['totalPowerGeneration'] += Math.floor(minuteData[powerGeneration]/60);
-                            solarDatas['currentGeneration'] = minuteData[powerGeneration];
-
-                            solarDatas['co2Reduction'] += minuteData[powerGeneration] * 0.5;
-                            solarDatas['todayPowerUsed'] += ((((getRandomPowerGenerationNumber(month, hour)) * 0.02) + getRandomNumber(2, 1, true))/ 60);
-                            // console.log(solarDatas['todayPowerUsed'] / 60)
-                        });
-                    });
-                });
-            });
-        });
-
-        solarDatas['nameplateCapacityPercentage'] = getRandomNumber(40, 80, true) / 10;
-        solarDatas['systemEfficiency'] = (solarDatas['currentGeneration'] > 0) ? (getRandomNumber(40, 950, true) / 10) : 0;
         solarHistoryDatas['timestamp'] = currentDate;
-        solarDatas['todayPowerUsed'] = Math.floor(solarDatas['todayPowerUsed']);
     }   
 
     console.log(solarDatas);
@@ -133,6 +131,7 @@ function updateSolarDatas(){
 
 function initSolarHistoryDatas(){
     let currentDate = new Date("2023-01-01");
+    // let currentDate = new Date("2024-10-06");
     const endDate = new Date();
 
     endDate.setMinutes(endDate.getMinutes() - 1);
@@ -147,10 +146,32 @@ function initSolarHistoryDatas(){
     solarHistoryDatas['timestamp'] = endDate;
 }
 
+function getHMIData(){
+    return new Promise((resolve, rejects) => {
+        fetch('http://127.0.0.1:8080/api/getChartData')
+            .then(function (response) {
+                return response.json();
+            })
+            .then(function (data) {
+                Object.keys(data).forEach( (host) => {
+                    console.log(data[host]['historyData']['electricProduction']);
+                })
+
+                resolve(data);
+            });
+    });
+    
+}
+
 initSolarHistoryDatas();
 updateSolarDatas();
+getHMIData();
 setInterval(() =>{
     updateSolarDatas();
+    getHMIData()
+        .then(recv => {
+            HMIData = recv;
+        })
 }, 20000);
 
 export default {
@@ -179,7 +200,6 @@ export default {
     },
 
     admin(req, res){
-
         const user = req.body['user'];
         const passwd = req.body['passwd'];
 
@@ -200,6 +220,10 @@ export default {
 
     getSolarHistoryDatas( req, res){
         res.json(solarHistoryDatas);
+    },
+
+    getHMIData( req, res){
+        res.json(HMIData);
     }
-};
+};  
 

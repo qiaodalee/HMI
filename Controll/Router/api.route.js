@@ -13,4 +13,6 @@ router.get('/getSolarData', api.getSolarData);
 
 router.get('/getSolarHistoryDatas', api.getSolarHistoryDatas);
 
+router.get('/getHMIData', api.getHMIData);
+
 export default router;

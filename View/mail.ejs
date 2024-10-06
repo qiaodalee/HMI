@@ -6,12 +6,17 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Mail</title>
     <link rel="stylesheet" type="text/css" href="/css/style.css">
-
+    <link rel="stylesheet" type="text/css" href="/css/mail.css">
     <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.5.1/jquery.min.js"></script>
 </head>
 
 
     <script>
+        function view(buttonEvent) {
+            buttonEvent.nextElementSibling.style.display = buttonEvent.nextElementSibling.style.display.length == 0 ? 'block' : ''
+            buttonEvent.value = buttonEvent.value == '隱藏' ? '檢視' : '隱藏';
+        }
+
         function sendEmail() {
             console.log(document.getElementById("emailAddressInput").value);
             setTimeout(()=>{}, 10000);
@@ -53,6 +58,7 @@
             <ul>
                 <li onclick="window.location.href='./index'">Index</li>
                 <li onclick="window.location.href='./mail'">Mail</li>
+                <li onclick="window.location.href='./Battery'">Battery</li>
                 <li>Monitor & Controll</li>
             </ul>
         </aside>
@@ -61,8 +67,34 @@
 
             <!-- Graph and Image Section -->
             <section class="data-visuals">
-                <p>Email: <input type="text" id="emailAddressInput" value=""></p>
-                <input type="button" value="Submit" onclick="sendEmail()">
+                <p>Email test: <input type="text" id="emailAddressInput" value=""></p>
+                <input type="button" value="Test" onclick="sendEmail()">
+            </section>
+
+            <section class="warning-container">
+                <h2>警告規則</h2>
+                <div class="warning-rule">
+                    <h3>儲能電池容量不足</h3>
+                    <p>目標郵件: u10906218@ms.ttu.edu.tw</p>
+                    <input type="button" value="刪除" disabled>
+                    <input type="button" value="編輯">
+                    <input type="button" value="檢視" onclick="view(this)">
+                    <div class="popup-info">
+                        <h3>儲能電池容量不足</h3>
+                        <p>當儲能電池容量 > 90%，發送警報信件</p>
+                    </div>
+                </div>
+                <div class="warning-rule">
+                    <h3>儲能電池電量不足</h3>
+                    <p>目標郵件: u10906218@ms.ttu.edu.tw</p>
+                    <input type="button" value="刪除" disabled>
+                    <input type="button" value="編輯">
+                    <input type="button" value="檢視" onclick="view(this)">
+                    <div class="popup-info">
+                        <h3>儲能電池電量不足</h3>
+                        <p>當儲能電池電量 < 8%，發送警報信件</p>
+                    </div>
+                </div>
             </section>
         </main>
     </div>

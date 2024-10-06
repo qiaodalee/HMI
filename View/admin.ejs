@@ -4,6 +4,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <link rel="stylesheet" type="text/css" href="/css/admin.css">
     <title>admin</title>
     <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.5.1/jquery.min.js"></script>
 </head>
@@ -36,7 +37,6 @@
             for ( i = 0; i< raw_data.length; i++){
                 q = raw_data.charCodeAt(i);
                 p += q.toString(16);
-                // console.log(q);
             }
             for ( i = 0; i< p.length; i++){
                 m = hex_h.indexOf(p.charAt(i));
@@ -46,7 +46,6 @@
                     n = hex_h.indexOf(md.charAt(i));
                 
                 sha256_data += hex_h.charAt(xor(m, n));
-                // console.log(`${displaybits(m)} x ${displaybits(n)} => ${displaybits(xor(m, n))}`);
             }
 
             return sha256_data;
@@ -88,27 +87,34 @@
             });
         }
 
-        // $.post({
-        //     url: '../api/admin',
-        //     contentType: 'application/json',
-        //     data: JSON.stringify({
-        //         user: '',
-        //         passwd: '',
-        //         fakeChallenge: fakeChallenge.innerHTML
-        //     }),
-        //         success: function(data) {
-        //         },
-        //         error: function(xhr, status, error) {
-        //             console.error('Error:', error);
-        //         }
-        // });
+        $(document).ready ( () => {
+            document.getElementById('adminButton').addEventListener('click', admin);
+            document.addEventListener('keypress', (e) => {
+                if ( e.key === 'Enter'){
+                    admin();
+                }
+            });
+        });
     </script>
-    <form id="adminForm" method="post" action="../api/admin">
-        <p>User  : <input type="text" id="user" value=""></p>
-        <p>Passwd: <input type="password" id="passwd" value=""></p>
-        <p id="fakeChallenge" hidden="true">8c6976e5b5410415bde908bd4dee15dfb167a9c873fc4bb8a81f6f2ab448a918</p>
-        <input type="button" value="Submit" onclick="admin()">
-    </form>
+    <div class="container">
+        <div class="left-panel">
+            <div class="logo">
+                <img src="./img/logo.png" alt="UTech Logo">
+            </div>
+            <h2>Welcome to</h2>
+            <h2>CDX Solar Scada</h2>
+            <p>Sign into your account</p>
+            <form id="adminForm" method="post" action="../api/admin" class="login-form">
+                <p>User  : <input type="text" id="user" value=""></p>
+                <p>Passwd: <input type="password" id="passwd" value=""></p>
+                <p id="fakeChallenge" hidden="true">8c6976e5b5410415bde908bd4dee15dfb167a9c873fc4bb8a81f6f2ab448a918</p>
+                <input type="button" value="Login" id="adminButton" >
+            </form>
+        </div>
+        <div class="right-panel">
+        </div>
+    </div>
+    
 
 </body>
 

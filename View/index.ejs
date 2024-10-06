@@ -51,15 +51,15 @@
         $(document).ready(function() {
             function getSolarData() {
                 $.get('../api/getSolarData', function(res) {
-                    document.getElementById('totalPowerGeneration').innerHTML = res['totalPowerGeneration'] + ' kwh';
-                    document.getElementById('monthGeneration').innerHTML = res['monthGeneration'] + ' kwh';
-                    document.getElementById('dayGeneration').innerHTML = res['dayGeneration'] + ' kwh';
-                    document.getElementById('currentGeneration').innerHTML = res['currentGeneration'] + ' kwh';
+                    document.getElementById('totalPowerGeneration').innerHTML = parseInt(res['totalPowerGeneration']) + ' kwh';
+                    document.getElementById('monthGeneration').innerHTML = parseInt(res['monthGeneration']) + ' kwh';
+                    document.getElementById('dayGeneration').innerHTML = parseInt(res['dayGeneration']) + ' kwh';
+                    document.getElementById('currentGeneration').innerHTML = parseInt(res['currentGeneration']) + ' kwh';
 
-                    document.getElementById('systemEfficiency').innerHTML = res['systemEfficiency'] + ' %';
-                    document.getElementById('co2Reduction').innerHTML = res['co2Reduction'] + ' kg';
-                    document.getElementById('todayPowerUsed').innerHTML = res['todayPowerUsed'] + ' kwh';
-                    document.getElementById('nameplateCapacityPercentage').innerHTML = res['nameplateCapacityPercentage'] + ' %';
+                    document.getElementById('systemEfficiency').innerHTML = parseInt(res['systemEfficiency']) + ' %';
+                    document.getElementById('co2Reduction').innerHTML = parseInt(res['co2Reduction']) + ' kg';
+                    document.getElementById('todayPowerUsed').innerHTML = parseInt(res['todayPowerUsed']) + ' kwh';
+                    document.getElementById('nameplateCapacity').innerHTML = parseInt(res['nameplateCapacity']) + ' kwh';
                 });
             }
 
@@ -76,7 +76,7 @@
                 getSolarHistoryDatas()
                     .then( recv => {
                         const currDate = new Date(); 
-                        const chartData = recv['powerGeneration'][currDate.getFullYear()][currDate.getMonth()+1][currDate.getDate()];
+                        const chartData = recv[currDate.getFullYear()][currDate.getMonth()+1][currDate.getDate()];
                         chart.data.labels = Object.keys(chartData);
                         chart.data.datasets[0].data = [];
 
@@ -84,9 +84,10 @@
 
                             let minuteGeneration = 0;
                             Object.keys(chartData[minutes]).forEach( (data) => {
-                                minuteGeneration += chartData[minutes][data];
+                                minuteGeneration += chartData[minutes][data]['powerGeneration'];
                             })
                             chart.data.datasets[0].data.push((minuteGeneration / 60));
+                            console.log(minuteGeneration);
                         })
 
 
@@ -95,8 +96,8 @@
                         time = new Date(recv['timestamp']);
                         timeStr = `${time.getFullYear()}-${time.getMonth()+1}-${time.getDate()} ${time.getHours()}:${time.getMinutes()}:${time.getSeconds()}`
 
-                        document.getElementById('timestamp').innerHTML = `System start at 2023-01-01 08:00:00<br>`;
-                        document.getElementById('timestamp').innerHTML += `Current time: ${timeStr}`;
+                        document.getElementById('timestamp').innerHTML = `系統啟動於 2023-01-01 08:00:00<br>`;
+                        document.getElementById('timestamp').innerHTML += `目前時間: ${timeStr}`;
                     })
                 
             }
@@ -131,6 +132,7 @@
             <ul>
                 <li onclick="window.location.href='./index'">Index</li>
                 <li onclick="window.location.href='./mail'">Mail</li>
+                <li onclick="window.location.href='./Battery'">Battery</li>
                 <li>Monitor & Controll</li>
                 <!-- <li>Menu 4</li> -->
             </ul>
@@ -141,47 +143,47 @@
             <p id="timestamp"></p>
             <section class="summary">
                 <div class="box">
-                    <h2 id="totalPowerGeneration">508780 kWh</h2>
-                    <p>Total Power Generation</p>
+                    <h2 id="totalPowerGeneration"></h2>
+                    <p>總發電量</p>
                 </div>
                 <div class="box">
-                    <h2 id="monthGeneration">2950 kWh</h2>
-                    <p>Month's Generation</p>
+                    <h2 id="monthGeneration"></h2>
+                    <p>月發電量</p>
                 </div>
                 <div class="box">
-                    <h2 id="dayGeneration">2950 kWh</h2>
-                    <p>Today's Generation</p>
+                    <h2 id="dayGeneration"></h2>
+                    <p>日發電量</p>
                 </div>
                 <div class="box">
-                    <h2 id="currentGeneration">2950 kWh</h2>
-                    <p>Current Generation</p>
+                    <h2 id="currentGeneration"></h2>
+                    <p>目前發電量</p>
                 </div>
             </section>
 
             <!-- System Information -->
             <section class="system-info">
                 <div class="info">
-                    <h3 id="systemEfficiency">97.2%</h3>
-                    <p>System Efficiency</p>
+                    <h3 id="systemEfficiency"></h3>
+                    <p>能源系統效率</p>
                 </div>
                 <div class="info">
-                    <h3 id="co2Reduction">332,233.7 kg</h3>
-                    <p>CO2 Reduction</p>
+                    <h3 id="co2Reduction"></h3>
+                    <p>二氧化碳減少</p>
                 </div>
                 <div class="info">
-                    <h3 id="todayPowerUsed">118 W/m²</h3>
-                    <p>Today's Power Used</p>
+                    <h3 id="todayPowerUsed"></h3>
+                    <p>今日用電量</p>
                 </div>
                 <div class="info">
-                    <h3 id="nameplateCapacityPercentage"> 19.5 °C</h3>
-                    <p>Nameplate Capacity Percentage</p>
+                    <h3 id="nameplateCapacity"></h3>
+                    <p>儲存電量</p>
                 </div>
             </section>
 
             <!-- Graph and Image Section -->
             <section class="data-visuals">
                 <div class="graph">
-                    <h4>Energy Production Graph</h4>
+                    <h2>今天能源生產圖</h2>
                     <canvas id="chart_canvas" width="400" height="200"></canvas>
                 </div>
                 <div class="solar-img">
