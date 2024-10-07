@@ -1,0 +1,53 @@
+main {
+    max-width: 800px;
+    margin: auto;
+    background: white;
+    border-radius: 8px;
+    box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1);
+    padding: 20px;
+}
+
+/* Log Section Styles */
+.log-section {
+    margin-bottom: 20px;
+    padding: 10px;
+    border-radius: 5px;
+}
+
+.log-section h2 {
+    margin-top: 0;
+}
+
+/* Info Log Styles */
+.info {
+    background-color: #e0f7fa;
+    border-left: 5px solid #00796b;
+}
+
+/* Warning Log Styles */
+.warning {
+    background-color: #fff3e0;
+    border-left: 5px solid #f57f20;
+}
+
+/* Error Log Styles */
+.error {
+    background-color: #ffebee;
+    border-left: 5px solid #d32f2f;
+}
+
+/* Log Entry Styles */
+.log-entry {
+    margin: 5px 0;
+}
+
+.timestamp {
+    font-size: 0.9em;
+    color: #666;
+    margin-right: 10px;
+}
+
+.message {
+    font-size: 1em;
+    color: #333;
+}

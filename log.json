@@ -1,0 +1,41 @@
+{
+    "logEntries": [
+        {
+            "timestamp": "2024-10-07T14:32:00Z",
+            "level": "INFO",
+            "message": "User accessed battery storage page.",
+            "userId": "admin",
+            "ipAddress": "192.168.1.1"
+        },
+        {
+            "timestamp": "2024-10-07T14:32:05Z",
+            "level": "INFO",
+            "message": "Battery level updated.",
+            "userId": "admin",
+            "newBatteryLevel": 75,
+            "ipAddress": "192.168.1.1"
+        },
+        {
+            "timestamp": "2024-10-07T14:32:10Z",
+            "level": "ERROR",
+            "message": "Failed to fetch battery status from server.",
+            "userId": "admin",
+            "errorCode": "SERVER_TIMEOUT",
+            "ipAddress": "192.168.1.1"
+        },
+        {
+            "timestamp": "2024-10-07T14:32:15Z",
+            "level": "INFO",
+            "message": "User viewed battery info.",
+            "userId": "admin",
+            "ipAddress": "192.168.1.1"
+        },
+        {
+            "timestamp": "2024-10-07T14:33:00Z",
+            "level": "INFO",
+            "message": "User logged out.",
+            "userId": "admin",
+            "ipAddress": "192.168.1.1"
+        }
+    ]
+}

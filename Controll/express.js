@@ -42,12 +42,15 @@ server.use('/battery', (req, res) => {
         res.redirect('/');
 });
 
+server.use('/log', (req, res) => {
+    if ( req.cookies.isAdmin)
+        res.render('log');
+    else
+        res.redirect('/');
+});
+
 server.use('/', (req, res) => {
     res.render('admin');
 });
-
-// server.use('/', (req, res) =>{
-//     res.send('<a href="./index">index</a><br><br><a href="./mail">mail</a>');
-// });
 
 export default server;

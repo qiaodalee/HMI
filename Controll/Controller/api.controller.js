@@ -1,7 +1,7 @@
-import { rejects } from 'assert';
 import {exec} from 'child_process';
-import { resolve } from 'path';
-import { start } from 'repl';
+import log from '../../log.json' with { type: "json" };
+
+console.log(log);
 
 // admin: admin
 const users = {
@@ -126,7 +126,7 @@ function updateSolarDatas(){
         solarHistoryDatas['timestamp'] = currentDate;
     }   
 
-    console.log(solarDatas);
+    // console.log(solarDatas);
 }
 
 function initSolarHistoryDatas(){
@@ -158,6 +158,9 @@ function getHMIData(){
                 })
 
                 resolve(data);
+            })
+            .catch(err => {
+                console.error("can't fetch http://127.0.0.1:8080/api/getChartData");
             });
     });
     
@@ -224,6 +227,11 @@ export default {
 
     getHMIData( req, res){
         res.json(HMIData);
+    },
+
+    getLog(req, res){
+        console.log(log);
+        res.json(log);
     }
 };  
 

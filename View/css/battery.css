@@ -1,7 +1,12 @@
 /* Main Container */
 main {
+    width: 100%;
+    display: flex;
+}
+
+.container {
+    margin: 20px;
     max-width: 600px;
-    margin: 20px auto;
     padding: 20px;
     background: white;
     border-radius: 8px;
@@ -11,6 +16,7 @@ main {
 /* Battery Control Section */
 .battery-control {
     text-align: center;
+    flex: 1;
 }
 
 .battery {
@@ -61,4 +67,37 @@ input[type="range"] {
 
 p {
     margin-top: 10px;
+}
+
+/* Title Styles */
+h2 {
+    font-size: 1.5em;
+    color: #333;
+    margin-bottom: 10px;
+}
+
+/* Right Panel Styles */
+.right-panel {
+    flex: 1;
+    display: flex;
+    flex-direction: column;
+}
+
+.source-info {
+    margin-top: 20px;
+}
+
+.info {
+    background: #e9e9e9;
+    padding: 10px;
+    border-radius: 5px;
+    min-height: 50px;
+}
+
+/* Responsive Styles */
+@media (max-width: 600px) {
+    .right-panel {
+        margin: 10px;
+        padding: 15px;
+    }
 }

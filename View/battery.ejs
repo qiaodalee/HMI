@@ -52,11 +52,13 @@
                         })
                     });
                     electricProduction /= 60;
-                    document.getElementById('source').innerHTML = `generator: ${parseInt(electricProduction)} / ${parseInt(electricProduction)/ 300000}%<br>`;
+                    document.getElementById('source').innerHTML = `發電機: ${parseInt(electricProduction)} kwh / ${parseInt(electricProduction)/ 300000} %<br>`;
+                    
                     electricProduction += res[1]['nameplateCapacity'];
-                    document.getElementById('source').innerHTML += `solar: ${parseInt(res[1]['nameplateCapacity'])} / ${parseInt(res[1]['nameplateCapacity'] / 300000)}%`;
+                    document.getElementById('source').innerHTML += `太陽能: ${parseInt(res[1]['nameplateCapacity'])} kwh / ${parseInt(res[1]['nameplateCapacity'] / 300000)} %`;
+                    
                     console.log(electricProduction);
-                    document.getElementById('nameplateCapacity').innerHTML = `${parseInt(electricProduction)} / 30000000`
+                    document.getElementById('nameplateCapacity').innerHTML = `${parseInt(electricProduction)} kwh / 30000000 kwh`
                     updateBatteryLevel(parseInt(electricProduction/300000));
                 })
         }
@@ -98,8 +100,8 @@
 
         <main>
 
-            <section class="battery-control">
-                <h2>Battery Storage</h2>
+            <section class="battery-control container">
+                <h2>電池儲存</h2>
                 <div class="battery">
                     <div class="battery-cap"></div>
                     <div class="battery-level" id="batteryLevel">
@@ -110,15 +112,20 @@
                     </div>
                 </div>
                 <!-- <input type="range" id="batteryInput" min="0" max="100" value="50" oninput="updateBatteryLevel(this.value)"> -->
-                <p>Storage Percentage: <span id="batteryPercentage">50</span>%</p>
+                <p>電池儲存百分比: <span id="batteryPercentage"></span>%</p>
             </section>
-            <section class="battery-info">
-                <h2>info</h2>
-                <div class="info" id="nameplateCapacity"></div>
-            </section>
-            <section class="source-info">
-                <h2>source</h2>
-                <div class="info" id="source"></div>
+            <section class="right-panel container">
+                <section class="battery-info">
+                    <h2>詳細資訊</h2>
+                    <div class="info">
+                        <h3>電池電量 / 電池容量</h3>
+                        <p id="nameplateCapacity"></p>
+                    </div>
+                </section>
+                <section class="source-info">
+                    <h2>電力來源</h2>
+                    <div class="info" id="source"></div>
+                </section>
             </section>
         </main>
     </div>
