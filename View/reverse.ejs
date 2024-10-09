@@ -1,0 +1,38 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Power Inverter HMI Admin Page</title>
+    <link rel="stylesheet" href="/css/reverse.css">
+    <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.5.1/jquery.min.js"></script>
+
+</head>
+<body>
+    <script>
+        $(document).ready(() => {
+            document.getElementById('admin').addEventListener('click', () => {
+                alert('Username or Password wrong!!!');
+            })
+        })
+    </script>
+    <header>
+        <h1>Power Inverter System Admin</h1>
+    </header>
+    <main>
+        <section id="settings">
+            <h2>System Admin</h2>
+            <label for="siteName">User Name:</label>
+            <input type="text" id="Name" placeholder="Enter user name">
+            <br><br>
+            <label for="siteName">User password:</label>
+            <input type="password" id="password" placeholder="Enter password">
+            <button id="admin">Admin</button>
+        </section>
+    </main>
+    <footer>
+        <p>&copy; Power Inverter System Admin</p>
+    </footer>
+    <script src="script.js"></script>
+</body>
+</html>

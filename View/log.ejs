@@ -18,16 +18,6 @@
                     return response.json();
                 })
                 .then(function (logs) {
-            //         <section class="log-section info">
-            //     <h2>Info Logs</h2>
-            //     <div class="log-entry">
-            //         <span class="timestamp">2024-10-07 14:32:00</span>
-            //         <span class="message">User accessed battery storage page.</span>
-            //         <br>
-            //         <span class="userId">222</span>
-            //         <span class="ipAddress">111</span>
-            //     </div>
-            // </section>
                     console.log(logs['logEntries']);
 
                     logs['logEntries'].forEach(log => {
@@ -55,12 +45,14 @@
                         logElement.appendChild(logTitle);
                         logElement.appendChild(logEntry);
 
+                        logEntry.appendChild(document.createElement('br'));
+
+                        const userID = document.createElement('span');
+                        userID.innerHTML = `<br>User: ${log['userId']}<br>IP: ${log['ipAddress']}`;
+
+                        logEntry.appendChild(userID);
+
                         document.getElementById('log').appendChild(logElement);
-
-
-                        if ( log['level'] == 'INFO'){
-
-                        }
                     });
                 });
         }
@@ -76,17 +68,8 @@
     <header>
         <div class="logo">
             <img src="./img/logo.png" alt="Logo">
-            <h1>solar energy scada</h1>
+            <h1>太陽能SCADA</h1>
         </div>
-        <nav>
-            <ul>
-                <li><a href="#">Overview</a></li>
-                <li><a href="#">Daily Data</a></li>
-                <li><a href="#">Inverter Info</a></li>
-                <li><a href="#">Historical Data</a></li>
-                <li><a href="#">Settings</a></li>
-            </ul>
-        </nav>
     </header>
     
 
@@ -94,10 +77,11 @@
     <div class="content">
         <aside class="sidebar">
             <ul>
-                <li onclick="window.location.href='./index'">Index</li>
-                <li onclick="window.location.href='./mail'">Mail</li>
-                <li onclick="window.location.href='./Battery'">Battery</li>
-                <li>Monitor & Controll</li>
+                <li onclick="window.location.href='./index'">首頁</li>
+                <li onclick="window.location.href='./mail'">警報郵件</li>
+                <li onclick="window.location.href='./battery'">電池資訊</li>
+                <li onclick="window.location.href='./log'">日誌</li>
+                <li onclick="window.location.href='./design'">架構圖</li>
             </ul>
         </aside>
 

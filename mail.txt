@@ -1,6 +1,8 @@
-From: matt.03144@gmail.com
-Subject: Testing Gmail Email from Command Line
-Hello,
-This is a test email sent from the Linux.
-Regards,
-Matthew Lee.
+From: u10906218@ms.ttu.edu.tw
+Subject: Testing Gmail Email from CDX Solar Scada
+This is a test email to verify the email functionality. Please confirm if you have received this message.
+\n
+Thank you!
+\n
+Best regards,
+CDX Solar Scada.

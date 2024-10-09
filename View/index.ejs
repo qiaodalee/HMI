@@ -93,17 +93,17 @@
     }
 
     function inputDate(promptStr){
-        const dateInput = prompt(promptStr);
+        let dateInput = prompt(promptStr);
         if ( !dateInput.length){
             dateInput = "2024-01-01";
         }
 
         if (dateInput) {
             const datePattern = /^\d{4}-\d{2}-\d{2}$/;
-            console.log(datePattern.test(dateInput));
+            // console.log(datePattern.test(dateInput));
             if (datePattern.test(dateInput)) {
                 const date = new Date(dateInput);
-                console.log(date);
+                // console.log(date);
                 if (!isNaN(date)) {
                     return date;
                 } else {
@@ -159,34 +159,52 @@
             document.getElementById('exportButton').addEventListener('click', function () {
                 // Sample data to export
 
-                const startDate = inputDate("Enter begining date (YYYY-MM-DD):");
-                const endDate = inputDate("Enter a end date (YYYY-MM-DD):");
+                const startDate = inputDate("輸入開始日期 (YYYY-MM-DD):");
+                const endDate = inputDate("輸入結束日期 (YYYY-MM-DD):");
 
                 const data = [];
+                let exportData = {
+                    timestamp: startDate,
+                    co2Reduction: 0,
+                    powerGeneration: 0,
+                    powerUsed: 0,
+                    nameplateCapacity: 0
+                };
+
+                // console.log(solarData)
 
                 solarData.forEach(date => {
                     const timestamp = new Date(date['timestamp']);
 
                     if ( timestamp >= startDate && timestamp <= endDate){
-                        data.push(date);
+                        if ( exportData['timestamp'].getHours() != timestamp.getHours()){
+                            data.push(date);
+                            exportData = {
+                                timestamp: timestamp,
+                                co2Reduction: 0,
+                                powerGeneration: 0,
+                                powerUsed: 0,
+                                nameplateCapacity: 0
+                            };
+                        }
+
+                        exportData['co2Reduction'] += date['co2Reduction'];
+                        exportData['powerGeneration'] += date['powerGeneration'];
+                        exportData['powerUsed'] += date['powerUsed'];
+                        exportData['nameplateCapacity'] += date['nameplateCapacity'];
                     }
                     else if ( timestamp > endDate){
                         return;
                     }
                 })
-                console.log(data)
+                // console.log(data)
 
-                // Convert data to a worksheet
                 const worksheet = XLSX.utils.json_to_sheet(data);
-
-                // Create a new workbook and append the worksheet
                 const workbook = XLSX.utils.book_new();
                 XLSX.utils.book_append_sheet(workbook, worksheet, "Sheet1");
 
-                // Generate a binary string
                 const excelBuffer = XLSX.write(workbook, { bookType: 'xlsx', type: 'array' });
 
-                // Create a blob and a link to download it
                 const blob = new Blob([excelBuffer], { type: 'application/octet-stream' });
                 const url = window.URL.createObjectURL(blob);
                 const a = document.createElement('a');
@@ -206,27 +224,19 @@
     <header>
         <div class="logo">
             <img src="./img/logo.png" alt="Logo">
-            <h1>solar energy scada</h1>
+            <h1>太陽能SCADA</h1>
         </div>
-        <nav>
-            <ul>
-                <li><a href="#">Overview</a></li>
-                <li><a href="#">Daily Data</a></li>
-                <li><a href="#">Inverter Info</a></li>
-                <li><a href="#">Historical Data</a></li>
-                <li><a href="#">Settings</a></li>
-            </ul>
-        </nav>
     </header>
 
     <!-- Main content -->
     <div class="content">
         <aside class="sidebar">
             <ul>
-                <li onclick="window.location.href='./index'">Index</li>
-                <li onclick="window.location.href='./mail'">Mail</li>
-                <li onclick="window.location.href='./Battery'">Battery</li>
-                <li>Monitor & Controll</li>
+                <li onclick="window.location.href='./index'">首頁</li>
+                <li onclick="window.location.href='./mail'">警報郵件</li>
+                <li onclick="window.location.href='./battery'">電池資訊</li>
+                <li onclick="window.location.href='./log'">日誌</li>
+                <li onclick="window.location.href='./design'">架構圖</li>
                 <!-- <li>Menu 4</li> -->
             </ul>
         </aside>
@@ -277,14 +287,13 @@
             <section class="data-visuals">
                 <div class="graph">
                     <h2>今天能源生產圖</h2>
-                    <canvas id="chart_canvas" width="400" height="200"></canvas>
+                    <button id="exportButton">匯出到 Excel</button>
+                    <canvas id="chart_canvas" width="600" height="200"></canvas>
                 </div>
                 <div class="solar-img">
                     <img src="../img/solar.webp" alt="Solar Panels" height="300" width="300">
                 </div>
             </section>
-
-            <button id="exportButton">Export to Excel</button>
         </main>
     </div>
 </body>

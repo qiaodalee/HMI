@@ -49,6 +49,17 @@ server.use('/log', (req, res) => {
         res.redirect('/');
 });
 
+server.use('/design', (req, res) => {
+    if ( req.cookies.isAdmin)
+        res.render('design');
+    else
+        res.redirect('/');
+});
+
+server.use('/InverterHMI', (req, res) => {
+    res.render('reverse');
+});
+
 server.use('/', (req, res) => {
     res.render('admin');
 });
