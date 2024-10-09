@@ -1,7 +1,6 @@
 import {exec} from 'child_process';
 import log from '../../log.json' with { type: "json" };
-
-console.log(log);
+import { timeStamp } from 'console';
 
 // admin: admin
 const users = {
@@ -22,6 +21,7 @@ let solarDatas = {
 
 let solarHistoryDatas = {
     'timestamp': 0,
+    datas: []
 };
 
 let HMIData = {};
@@ -65,55 +65,92 @@ function getRandomPowerGeneration(currentDate){
     const currentMonth = currentDate.getMonth() + 1;
     const currentDay = currentDate.getDate();
     const currentHour = currentDate.getHours();
-    const currentMinute = currentDate.getMinutes();
+    const currentMinute = currentDate.getMinutes()
+    
+    let solarHistoryData = {
+        timestamp: currentDate
+    };
 
-    if ( !solarHistoryDatas[currentYear]){
-        solarHistoryDatas[currentYear] = {};
-    }
-
-    if ( !solarHistoryDatas[currentYear][currentMonth]) {
-        solarHistoryDatas[currentYear][currentMonth] = {};  
-    } 
-
-    if ( !solarHistoryDatas[currentYear][currentMonth][currentDay]) {
-        solarHistoryDatas[currentYear][currentMonth][currentDay] = {};  
-    } 
-
-    if ( !solarHistoryDatas[currentYear][currentMonth][currentDay][currentHour]) {
-        solarHistoryDatas[currentYear][currentMonth][currentDay][currentHour] = {};  
-    }
-
-    solarHistoryDatas[currentYear][currentMonth][currentDay][currentHour][currentMinute] = {};
-
-    solarHistoryDatas[currentYear][currentMonth][currentDay][currentHour][currentMinute]['powerGeneration'] = getRandomPowerGenerationNumber(currentMonth, currentHour) / 20;
-    solarHistoryDatas[currentYear][currentMonth][currentDay][currentHour][currentMinute]['co2Reduction'] = solarHistoryDatas[currentYear][currentMonth][currentDay][currentHour][currentMinute]['powerGeneration'] * (getRandomNumber(3, 4, true) / 10);
-    solarHistoryDatas[currentYear][currentMonth][currentDay][currentHour][currentMinute]['powerUsed'] = ((getRandomPowerGenerationNumber(currentMonth, currentHour)*0.02) + getRandomNumber(20, 0, true)) / 20
-    solarHistoryDatas[currentYear][currentMonth][currentDay][currentHour][currentMinute]['nameplateCapacity'] = solarHistoryDatas[currentYear][currentMonth][currentDay][currentHour][currentMinute]['powerGeneration'] - solarHistoryDatas[currentYear][currentMonth][currentDay][currentHour][currentMinute]['powerUsed'];
-
-    // console.log(solarHistoryDatas[currentYear][currentMonth][currentDay][currentHour][currentMinute]['powerGeneration']);
+    solarHistoryData['powerGeneration'] = getRandomPowerGenerationNumber(currentMonth, currentHour) / 20;
+    solarHistoryData['co2Reduction'] = solarHistoryData['powerGeneration'] * (getRandomNumber(3, 4, true) / 10);
+    solarHistoryData['powerUsed'] = ((getRandomPowerGenerationNumber(currentMonth, currentHour)*0.02) + getRandomNumber(20, 0, true)) / 20
+    solarHistoryData['nameplateCapacity'] = solarHistoryData['powerGeneration'] - solarHistoryData['powerUsed'];
 
 
-    solarDatas['totalPowerGeneration'] += solarHistoryDatas[currentYear][currentMonth][currentDay][currentHour][currentMinute]['powerGeneration'];
+    solarDatas['totalPowerGeneration'] += solarHistoryData['powerGeneration'];
     
     if ( currentDay == 1) solarDatas['monthGeneration'] = 0;
-    solarDatas['monthGeneration'] += solarHistoryDatas[currentYear][currentMonth][currentDay][currentHour][currentMinute]['powerGeneration'];
+    solarDatas['monthGeneration'] += solarHistoryData['powerGeneration'];
 
     if ( currentHour == 0) {
         solarDatas['dayGeneration'] = 0;
         solarDatas['todayPowerUsed'] = 0;
     }
-    solarDatas['dayGeneration'] += solarHistoryDatas[currentYear][currentMonth][currentDay][currentHour][currentMinute]['powerGeneration'];
+    solarDatas['dayGeneration'] += solarHistoryData['powerGeneration'];
 
-    solarDatas['currentGeneration'] = solarHistoryDatas[currentYear][currentMonth][currentDay][currentHour][currentMinute]['powerGeneration'] * 60;
+    solarDatas['currentGeneration'] = solarHistoryData['powerGeneration'] * 60;
 
     solarDatas['systemEfficiency'] = (solarDatas['currentGeneration'] > 0) ? (getRandomNumber(40, 950, true) / 10) : 0;
 
-    solarDatas['co2Reduction'] += solarHistoryDatas[currentYear][currentMonth][currentDay][currentHour][currentMinute]['co2Reduction'];
+    solarDatas['co2Reduction'] += solarHistoryData['co2Reduction'];
 
-    solarDatas['todayPowerUsed'] += solarHistoryDatas[currentYear][currentMonth][currentDay][currentHour][currentMinute]['powerUsed'];
+    solarDatas['todayPowerUsed'] += solarHistoryData['powerUsed'];
 
-    solarDatas['nameplateCapacity'] += solarHistoryDatas[currentYear][currentMonth][currentDay][currentHour][currentMinute]['nameplateCapacity'];
+    solarDatas['nameplateCapacity'] += solarHistoryData['nameplateCapacity'];
     solarDatas['nameplateCapacityPercentage'] = solarDatas['nameplateCapacity'] / 300000;
+
+    solarHistoryDatas['datas'].push(solarHistoryData);
+    // console.log(solarHistoryDatas['datas'][solarHistoryDatas['datas'].length-1]);
+
+    // console.log(solarHistoryDatas);
+
+    // if ( !solarHistoryDatas[currentYear]){
+    //     solarHistoryDatas[currentYear] = {};
+    // }
+
+    // if ( !solarHistoryDatas[currentYear][currentMonth]) {
+    //     solarHistoryDatas[currentYear][currentMonth] = {};  
+    // } 
+
+    // if ( !solarHistoryDatas[currentYear][currentMonth][currentDay]) {
+    //     solarHistoryDatas[currentYear][currentMonth][currentDay] = {};  
+    // } 
+
+    // if ( !solarHistoryDatas[currentYear][currentMonth][currentDay][currentHour]) {
+    //     solarHistoryDatas[currentYear][currentMonth][currentDay][currentHour] = {};  
+    // }
+
+    // solarHistoryDatas[currentYear][currentMonth][currentDay][currentHour][currentMinute] = {};
+
+    // solarHistoryDatas[currentYear][currentMonth][currentDay][currentHour][currentMinute]['powerGeneration'] = getRandomPowerGenerationNumber(currentMonth, currentHour) / 20;
+    // solarHistoryDatas[currentYear][currentMonth][currentDay][currentHour][currentMinute]['co2Reduction'] = solarHistoryDatas[currentYear][currentMonth][currentDay][currentHour][currentMinute]['powerGeneration'] * (getRandomNumber(3, 4, true) / 10);
+    // solarHistoryDatas[currentYear][currentMonth][currentDay][currentHour][currentMinute]['powerUsed'] = ((getRandomPowerGenerationNumber(currentMonth, currentHour)*0.02) + getRandomNumber(20, 0, true)) / 20
+    // solarHistoryDatas[currentYear][currentMonth][currentDay][currentHour][currentMinute]['nameplateCapacity'] = solarHistoryDatas[currentYear][currentMonth][currentDay][currentHour][currentMinute]['powerGeneration'] - solarHistoryDatas[currentYear][currentMonth][currentDay][currentHour][currentMinute]['powerUsed'];
+
+    // // console.log(solarHistoryDatas[currentYear][currentMonth][currentDay][currentHour][currentMinute]['powerGeneration']);
+
+
+    // solarDatas['totalPowerGeneration'] += solarHistoryDatas[currentYear][currentMonth][currentDay][currentHour][currentMinute]['powerGeneration'];
+    
+    // if ( currentDay == 1) solarDatas['monthGeneration'] = 0;
+    // solarDatas['monthGeneration'] += solarHistoryDatas[currentYear][currentMonth][currentDay][currentHour][currentMinute]['powerGeneration'];
+
+    // if ( currentHour == 0) {
+    //     solarDatas['dayGeneration'] = 0;
+    //     solarDatas['todayPowerUsed'] = 0;
+    // }
+    // solarDatas['dayGeneration'] += solarHistoryDatas[currentYear][currentMonth][currentDay][currentHour][currentMinute]['powerGeneration'];
+
+    // solarDatas['currentGeneration'] = solarHistoryDatas[currentYear][currentMonth][currentDay][currentHour][currentMinute]['powerGeneration'] * 60;
+
+    // solarDatas['systemEfficiency'] = (solarDatas['currentGeneration'] > 0) ? (getRandomNumber(40, 950, true) / 10) : 0;
+
+    // solarDatas['co2Reduction'] += solarHistoryDatas[currentYear][currentMonth][currentDay][currentHour][currentMinute]['co2Reduction'];
+
+    // solarDatas['todayPowerUsed'] += solarHistoryDatas[currentYear][currentMonth][currentDay][currentHour][currentMinute]['powerUsed'];
+
+    // solarDatas['nameplateCapacity'] += solarHistoryDatas[currentYear][currentMonth][currentDay][currentHour][currentMinute]['nameplateCapacity'];
+    // solarDatas['nameplateCapacityPercentage'] = solarDatas['nameplateCapacity'] / 300000;
 
     // console.log(solarDatas)
 }
@@ -121,16 +158,20 @@ function getRandomPowerGeneration(currentDate){
 function updateSolarDatas(){
     const currentDate = new Date();
 
+    console.log(solarHistoryDatas['timestamp'].getMinutes());
+    console.log(currentDate.getMinutes())
+
     if ( solarHistoryDatas['timestamp'].getMinutes() != currentDate.getMinutes()){
+        currentDate.setSeconds(0);
         getRandomPowerGeneration(currentDate);
-        solarHistoryDatas['timestamp'] = currentDate;
+        solarHistoryDatas['timestamp'] = new Date(solarHistoryDatas['timestamp'].setTime(solarHistoryDatas['timestamp'].getTime() + 60000));
     }   
 
     // console.log(solarDatas);
 }
 
 function initSolarHistoryDatas(){
-    let currentDate = new Date("2023-01-01");
+    let currentDate = new Date("2024-01-01");
     // let currentDate = new Date("2024-10-06");
     const endDate = new Date();
 
@@ -139,11 +180,12 @@ function initSolarHistoryDatas(){
     let i = 0;
     
     while( currentDate < endDate){
-        getRandomPowerGeneration(currentDate);
+        getRandomPowerGeneration(new Date(currentDate));
         currentDate.setTime(currentDate.getTime() + 60000);
     }
 
     solarHistoryDatas['timestamp'] = endDate;
+    // console.log(solarHistoryDatas['datas'][600001])
 }
 
 function getHMIData(){
@@ -230,7 +272,6 @@ export default {
     },
 
     getLog(req, res){
-        console.log(log);
         res.json(log);
     }
 };  
